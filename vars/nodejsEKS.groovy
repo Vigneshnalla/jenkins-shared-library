@@ -75,20 +75,19 @@ def call(Map configMap){
                         echo "DEBUG: Release Exists Value - '${releaseExists}'"
 
                         // Configure kubeconfig and perform Helm actions based on release existence
-                        sh """
-                            aws eks update-kubeconfig --region ${region} --name ${project}-dev
-                            cd helm
-                            sed -i 's/IMAGE_VERSION/${appVersion}/g' values.yaml
-                        """
-
-                        if (releaseExists.isEmpty()) {
+                     sh """
+                        aws eks update-kubeconfig --region ${region} --name ${project}-dev
+                        cd helm
+                        sed -i 's/IMAGE_VERSION/${appVersion}/g' values.yaml
+                        if [ -z "${releaseExists}" ]; then
                             echo "${component} not installed yet, first time installation"
-                            sh "helm install ${component} -n ${project} ."
-                        } else {
+                            helm install ${component} -n ${project} .
+                        else
                             echo "${component} exists, running upgrade"
-                            sh "ls -l" 
-                            sh "helm upgrade ${component} -n ${project} ."
-                        }
+                            ls -l
+                            helm upgrade ${component} -n ${project} .
+                        fi
+                    """
                     }
                 }
 
