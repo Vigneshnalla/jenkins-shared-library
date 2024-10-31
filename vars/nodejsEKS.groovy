@@ -86,7 +86,7 @@ def call(Map configMap){
                             sh "helm install ${component} -n ${project} ."
                         } else {
                             echo "${component} exists, running upgrade"
-                            ls
+                            sh "ls -l" 
                             sh "helm upgrade ${component} -n ${project} ."
                         }
                     }
